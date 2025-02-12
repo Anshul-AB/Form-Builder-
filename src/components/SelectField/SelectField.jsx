@@ -10,14 +10,46 @@ const SelectField = () => {
   const addField = (type) => {
     setFields([
       ...fields,
-      { id: Date.now(), type, label: type, options: ["Option 1", "Option 2"] },
+      {
+        id: Date.now(),
+        type,
+        label: type,
+        options: ["Option 1", "Option 2"],
+        required: false,
+        placeholder: "",
+        className: "",
+        value: "",
+        maxLength: "",
+      },
     ]);
   };
 
-  const handleEdit = (id, label, type) => {
+  const handleEdit = (
+    id,
+    label,
+    type,
+    newRequired,
+    newPlaceholder,
+    newClass,
+    newValue,
+    newMaxLength,
+    allowedRoles
+  ) => {
     setFields(
       fields.map((field) =>
-        field.id === id ? { ...field, label, type } : field
+        field.id === id
+          ? {
+              ...field,
+              label,
+              type,
+              required: newRequired,
+              placeholder: newPlaceholder,
+              className: newClass,
+              value: newValue,
+              maxLength: newMaxLength,
+              access: allowedRoles
+            }
+          : field
       )
     );
   };
@@ -50,10 +82,18 @@ const SelectField = () => {
     }
   };
 
-  const handleCopy = (id) => {
+  const handleCopy = (id, type) => {
     const fieldToCopy = fields.find((field) => field.id === id);
     if (fieldToCopy) {
-      console.log("copied!")
+      setFields([
+        ...fields,
+        {
+          id: Date.now(),
+          type,
+          label: type,
+          options: ["Option 1", "Option 2"],
+        },
+      ]);
     }
   };
 
@@ -68,30 +108,41 @@ const SelectField = () => {
 
     // Generate the HTML code
     const generatedHtml = `
-      <form>
-        ${fields
-          .map((field) => {
-            if (field.type === "paragraph") {
-              return `<p>${field.label}</p>`;
-            } else if (field.type === "select") {
-              return `
-                <label>${field.label}</label>
-                <select>
-                  ${field.options
-                    .map((opt) => `<option>${opt}</option>`)
-                    .join("")}
-                </select>
-              `;
-            } else {
-              return `
-                <label>${field.label}</label>
-                <input type="${field.type}" />
-              `;
-            }
-          })
-          .join("")}
-      </form>
-    `;
+    <form>
+    ${fields
+      .map((field) => {
+        if (field.type === "paragraph") {
+          return `
+          <label for="${field.id}">${field.label}</label>
+          <p class="${field.className}" access="${field.access}" >${field.value}</p>`;
+        } else if (field.type === "select") {
+          return `
+            <label for="${field.id}">${field.label}</label>
+            <select id="${field.id}" class="${field.className || ""}">
+              ${field.options
+                ?.map((opt) => `<option value="${opt}">${opt}</option>`)
+                .join("")}
+            </select>
+          `;
+        } else {
+          return `
+            <label for="${field.id}">${field.label}</label>
+            <input 
+              id="${field.id}"
+              type="${field.type}" 
+              ${field.required ? "required" : ""}
+              placeholder="${field.placeholder || ""}"
+              class="${field.className || ""}"
+              value="${field.value || ""}"
+              ${field.maxLength ? `maxLength="${field.maxLength}"` : ""}
+            />
+          `;
+        }
+      })
+      .join("")}
+  </form>
+  
+`;
 
     setHtmlCode(generatedHtml);
     setShowCopyButton(true);
@@ -124,7 +175,7 @@ const SelectField = () => {
       </div>
 
       <div className="sidebar">
-      {/* Select field options */}
+        {/* Select field options */}
         <div className="buttons">
           <button className="field-name" onClick={() => addField("text")}>
             Text Field
