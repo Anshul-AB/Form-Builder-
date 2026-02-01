@@ -1,9 +1,30 @@
-.main{
+.app {
+  min-height: 100vh;
   display: flex;
-  justify-content: end;
-  align-items: start;
-  background-color: bisque;
-  height: 100vh;
-  width: 100vw;
-  padding: 5px;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: floralwhite;
+}
+
+/* Header */
+.app-header {
+  background: linear-gradient(135deg, #1f1c64, #4244c8);
+  color: white;
+  text-align: center;
+}
+
+.app-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.app-header p {
+  font-size: 1rem;
+  opacity: 0.9;
 }
